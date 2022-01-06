@@ -3,8 +3,21 @@ import axios from "axios";
 
 const Search = () => {
   const [term, setTerm] = useState("programming");
+  const [debouncedTerm, setDebouncedTerm] = useState(term);
   const [results, setResults] = useState([]);
 
+  // Queue up a potential change to debouncedTerm.
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      if (term) setDebouncedTerm(term);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [term]);
+
+  // When a potential change above happens, then this useEffect will get triggered. It also gets triggered on initialization of the page/app.
   useEffect(() => {
     const search = async () => {
       const { data } = await axios.get("https://en.wikipedia.org/w/api.php", {
@@ -13,26 +26,15 @@ const Search = () => {
           list: "search",
           origin: "*",
           format: "json",
-          srsearch: term,
+          srsearch: debouncedTerm,
         },
       });
 
       setResults(data.query.search);
     };
 
-    if (term && !results.length) {
-      search();
-    } else {
-      const timeoutId = setTimeout(() => {
-        if (term) {
-          search();
-        }
-      }, 500);
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [term]);
+    search();
+  }, [debouncedTerm]);
 
   const renderedResults = results.map((result) => {
     return (
