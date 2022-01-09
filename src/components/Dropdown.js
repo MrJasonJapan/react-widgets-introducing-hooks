@@ -5,19 +5,28 @@ const Dropdown = ({ options, selected, onSelectedChange }) => {
   const ref = useRef();
 
   useEffect(() => {
+    const onBodyClick = (event) => {
+      // do nothing if the clicked target is within/inside the Dropdown Components's top level element
+      if (ref.current.contains(event.target)) {
+        return;
+      }
+      setOpen(false);
+    };
+
     document.body.addEventListener(
       "click",
-      (event) => {
-        // do nothing if the clicked target is within/inside the Dropdown Components's top level element
-        if (ref.current.contains(event.target)) {
-          return;
-        }
-        setOpen(false);
-      },
+      onBodyClick,
       // an adjustment recommended by newer versions of react
       // https://reactjs.org/blog/2020/08/10/react-v17-rc.html#fixing-potential-issues
       { capture: true }
     );
+
+    // This will run not only on a re-render, but also when the component is removed from the DOM.
+    return () => {
+      document.body.removeEventListener("click", onBodyClick, {
+        capture: true,
+      });
+    };
   }, []);
 
   const renderedOptions = options.map((option) => {
@@ -27,7 +36,7 @@ const Dropdown = ({ options, selected, onSelectedChange }) => {
 
     return (
       <div
-        key={option.key}
+        key={option.label}
         onClick={() => onSelectedChange(option)}
         className="item"
       >
