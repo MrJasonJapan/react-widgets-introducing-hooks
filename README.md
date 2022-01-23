@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Use this app to get a basic understanding of React Hooks.
+### Private Notion Memo
+https://www.notion.so/spagettys/Understanding-Hooks-in-React-ba398da42a4b40909dcf4b11dffd1f5d
+
 ## Available Scripts
 
 In the project directory, you can run:
